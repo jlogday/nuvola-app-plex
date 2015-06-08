@@ -71,16 +71,91 @@ WebApp.update = function()
         artLocation: null // always null
     }
 
+    var idMap = { title: "track", artist: "artist", album: "album" }
+    for (var key in idMap) {
+        try {
+            track[key] = document.getElementById(idMap[key]).innerText || null;
+        }
+        catch (e) {
+            track[key] = nulll;
+        }
+    }
+
     player.setTrack(track);
-    player.setPlaybackState(PlaybackState.UNKNOWN);
+
+    try {
+        switch (document.getElementById("status").innerText) {
+            case "Playing":
+                var state = PlaybackState.PLAYING;
+                break;
+            case "Paused":
+                var state = PlaybackState.PAUSED;
+                break;
+            default:
+                var state = PlaybackState.UNKNOWN;
+                break;
+        }
+    }
+    catch (e) {
+        var state = PlaybackState.UNKNOWN;
+    }
+
+    player.setPlaybackState(state);
     
+    var enabled;
+    try {
+        enabled = !document.getElementById("prev").disabled;
+    }
+    catch(e) {
+        enabled = false;
+    }
+    player.setCanGoPrev(enabled);
+
+    try {
+        enabled  = !document.getElementById("next").disabled;
+    }
+    catch(e) {
+        enabled = false;
+    }
+    player.setCanGoNext(enabled);
+
+    var playPause = document.getElementById("pp");
+    try {
+        enabled  = playPause.innerText == "Play";
+    }
+    catch(e) {
+        enabled = false;
+    }
+    player.setCanPlay(enabled);
+
+    try {
+        enabled  = playPause.innerText == "Pause";
+    }
+    catch(e) {
+        enabled = false;
+    }
+    player.setCanPause(enabled);
+
     // Schedule the next update
     setTimeout(this.update.bind(this), 500);
 }
 
 // Handler of playback actions
-WebApp._onActionActivated = function(emitter, name, param)
-{
+WebApp._onActionActivated = function(emitter, name, param) {
+    switch (name) {
+        case PlayerAction.TOGGLE_PLAY:
+        case PlayerAction.PLAY:
+        case PlayerAction.PAUSE:
+        case PlayerAction.STOP:
+            Nuvola.clickOnElement(document.getElementById("pp"));
+            break;
+        case PlayerAction.PREV_SONG:
+            Nuvola.clickOnElement(document.getElementById("prev"));
+            break;
+        case PlayerAction.PREV_SONG:
+            Nuvola.clickOnElement(document.getElementById("next"));
+            break;
+    }
 }
 
 WebApp.start();
