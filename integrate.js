@@ -61,6 +61,35 @@ WebApp._onPageReady = function()
     this.update();
 }
 
+function fetchTrackInfo(className) {
+    var rval = null;
+    var nl = document.getElementsByClassName(className);
+    if (nl.length > 0) {
+        rval = nl[0].innerText;
+    }
+
+    return rval;
+}
+
+/*function fetchTrackInfo() {
+    var track = {
+        title: null,
+        artist: null,
+        album: null,
+        artLocation: null // always null
+    }
+    var elmt = document.querySelector('div.media-poster');
+    console.log('elmt: ' + elmt);
+    if (elmt) {
+        track['title'] = elmt.getAttribute('data-title') || 'Unknown Title';
+        track['artist'] = elmt.getAttribute('data-grandparent-title') || 'Unknown Artist';
+        track['album'] = elmt.getAttribute('data-image-title') || 'Unknown Album';
+    }
+
+    return track;
+}*/
+
+
 // Extract data from the web page
 WebApp.update = function()
 {
@@ -71,15 +100,33 @@ WebApp.update = function()
         artLocation: null // always null
     }
 
-    var idMap = { title: "track", artist: "artist", album: "album" }
+    /*var idMap = { title: "track", artist: "artist", album: "album" }
     for (var key in idMap) {
         try {
             track[key] = document.getElementById(idMap[key]).innerText || null;
         }
         catch (e) {
-            track[key] = nulll;
+            track[key] = null;
         }
     }
+
+    track['title'] = "Oigen Boigen!";*/
+    /*var elmt = document.getElementsByClassName("grandparent-title");
+    console.log("elmt: " + elmt);
+    if (elmt) {
+        console.log("len: " + elmt.length);
+        if (elmt.length >= 1) {
+            var artist = elmt[0].innerText;
+            console.log("artist: " + artist);
+            track['artist'] = artist;
+        }
+    }
+    */
+    //var artist = fetchTrackInfo('grandparent-title');
+    //track['artist'] = artist || 'Unknown Artist';
+    track['artist'] = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
+    track['title'] = fetchTrackInfo('item-title') || 'Unknown Title';
+    //var track = fetchTrackInfo();
 
     player.setTrack(track);
 
@@ -144,6 +191,12 @@ WebApp.update = function()
 WebApp._onActionActivated = function(emitter, name, param) {
     switch (name) {
         case PlayerAction.TOGGLE_PLAY:
+            var button = document.getElementsByClassName("pause-btn");
+            console.log("button: " + button);
+            if (button) {
+                Nuvola.clickOnElement(button);
+            }
+            break;
         case PlayerAction.PLAY:
         case PlayerAction.PAUSE:
         case PlayerAction.STOP:
