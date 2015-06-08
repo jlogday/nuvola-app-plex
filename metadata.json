@@ -1,8 +1,8 @@
 {
-	"id": "test",
-	"name": "Test",
-	"maintainer_name": "Jiří Janoušek",
-	"maintainer_link": "https://github.com/fenryxo",
+	"id": "plex",
+	"name": "Plex",
+	"maintainer_name": "Jason Day",
+	"maintainer_link": "https://github.com/jlogday",
 	"version_major": 1,
 	"version_minor": 0,
 	"api_major": 3,
