@@ -71,24 +71,6 @@ function fetchTrackInfo(className) {
     return rval;
 }
 
-/*function fetchTrackInfo() {
-    var track = {
-        title: null,
-        artist: null,
-        album: null,
-        artLocation: null // always null
-    }
-    var elmt = document.querySelector('div.media-poster');
-    console.log('elmt: ' + elmt);
-    if (elmt) {
-        track['title'] = elmt.getAttribute('data-title') || 'Unknown Title';
-        track['artist'] = elmt.getAttribute('data-grandparent-title') || 'Unknown Artist';
-        track['album'] = elmt.getAttribute('data-image-title') || 'Unknown Album';
-    }
-
-    return track;
-}*/
-
 
 // Extract data from the web page
 WebApp.update = function()
@@ -100,33 +82,9 @@ WebApp.update = function()
         artLocation: null // always null
     }
 
-    /*var idMap = { title: "track", artist: "artist", album: "album" }
-    for (var key in idMap) {
-        try {
-            track[key] = document.getElementById(idMap[key]).innerText || null;
-        }
-        catch (e) {
-            track[key] = null;
-        }
-    }
-
-    track['title'] = "Oigen Boigen!";*/
-    /*var elmt = document.getElementsByClassName("grandparent-title");
-    console.log("elmt: " + elmt);
-    if (elmt) {
-        console.log("len: " + elmt.length);
-        if (elmt.length >= 1) {
-            var artist = elmt[0].innerText;
-            console.log("artist: " + artist);
-            track['artist'] = artist;
-        }
-    }
-    */
-    //var artist = fetchTrackInfo('grandparent-title');
-    //track['artist'] = artist || 'Unknown Artist';
+    // album only appears to be stored as an attribute in a different element
     track['artist'] = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
     track['title'] = fetchTrackInfo('item-title') || 'Unknown Title';
-    //var track = fetchTrackInfo();
 
     player.setTrack(track);
 
@@ -152,6 +110,10 @@ WebApp.update = function()
     var enabled;
     try {
         enabled = !document.getElementById("prev").disabled;
+        var nl = document.getElementsByClassName("previous-btn");
+        if (nl.length > 0) {
+            enabled = !nl[0].disabled;
+        }
     }
     catch(e) {
         enabled = false;
@@ -173,7 +135,7 @@ WebApp.update = function()
     catch(e) {
         enabled = false;
     }
-    player.setCanPlay(enabled);
+    player.setCanPlay(true);
 
     try {
         enabled  = playPause.innerText == "Pause";
@@ -181,7 +143,7 @@ WebApp.update = function()
     catch(e) {
         enabled = false;
     }
-    player.setCanPause(enabled);
+    player.setCanPause(true);
 
     // Schedule the next update
     setTimeout(this.update.bind(this), 500);
@@ -191,16 +153,28 @@ WebApp.update = function()
 WebApp._onActionActivated = function(emitter, name, param) {
     switch (name) {
         case PlayerAction.TOGGLE_PLAY:
-            var button = document.getElementsByClassName("pause-btn");
-            console.log("button: " + button);
-            if (button) {
-                Nuvola.clickOnElement(button);
+            var nl = document.getElementsByClassName("pause-btn");
+            if (nl.length > 0) {
+                Nuvola.clickOnElement(nl[0]);
             }
             break;
         case PlayerAction.PLAY:
+            var nl = document.getElementsByClassName("play-btn");
+            if (nl.length > 0) {
+                Nuvola.clickOnElement(nl[0]);
+            }
+            break;
         case PlayerAction.PAUSE:
+            var nl = document.getElementsByClassName("pause-btn");
+            if (nl.length > 0) {
+                Nuvola.clickOnElement(nl[0]);
+            }
+            break;
         case PlayerAction.STOP:
-            Nuvola.clickOnElement(document.getElementById("pp"));
+            var nl = document.getElementsByClassName("stop-btn");
+            if (nl.length > 0) {
+                Nuvola.clickOnElement(nl[0]);
+            }
             break;
         case PlayerAction.PREV_SONG:
             Nuvola.clickOnElement(document.getElementById("prev"));
