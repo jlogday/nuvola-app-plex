@@ -132,12 +132,12 @@ WebApp.update = function()
         track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
     }
 
-    elmt = document.querySelector('button.grandparent-title'');
+    elmt = document.querySelector('button.grandparent-title');
     if (elmt) {
         track.artist = elmt.innerText || 'Unknown Artist';
     }
 
-    elmt = document.querySelector('button.item-title'');
+    elmt = document.querySelector('button.item-title');
     if (elmt) {
         track.title = elmt.innerText || 'Unknown Title';
     }
