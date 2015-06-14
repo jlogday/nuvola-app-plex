@@ -131,8 +131,16 @@ WebApp.update = function()
     if (elmt) {
         track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
     }
-    track.artist = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
-    track.title = fetchTrackInfo('item-title') || 'Unknown Title';
+
+    elmt = document.querySelector('button.grandparent-title'');
+    if (elmt) {
+        track.artist = elmt.innerText || 'Unknown Artist';
+    }
+
+    elmt = document.querySelector('button.item-title'');
+    if (elmt) {
+        track.title = elmt.innerText || 'Unknown Title';
+    }
 
     player.setTrack(track);
 
