@@ -8,6 +8,7 @@
 	"api_major": 3,
 	"api_minor": 0,
 	"categories": "AudioVideo;Audio;",
-	"home_url": "http://alfred:32400/web/index.html",
+	//"home_url": "http://alfred:32400/web/index.html",
+        "home_url": "http://alfred:32400/web/index.html#!/server/80c8cea5da4e93612c64bd35618fd6f36b1ef658/section/4",
 	"hidden": true
 }

@@ -159,10 +159,14 @@ WebApp._onActionActivated = function(emitter, name, param) {
 
             break;
         case PlayerAction.PLAY:
-            var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
+            /*var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
             if (playButton) {
                 Nuvola.clickOnElement(playButton);
+            }*/
+            try {
+                document.querySelector('div.section-side-bar-container').getElementsByClassName('play-btn')[0].click()
             }
+            catch (e) {}
 
             break;
         case PlayerAction.PAUSE:
