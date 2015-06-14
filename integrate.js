@@ -186,7 +186,7 @@ WebApp._onActionActivated = function(emitter, name, param) {
             }
 
             break;
-        case PlayerAction.PREV_SONG:
+        case PlayerAction.NEXT_SONG:
             var nextButton = document.querySelector('div.mini-controls-center-buttons button.next-btn');
             if (nextButton) {
                 Nuvola.clickOnElement(nextButton);
