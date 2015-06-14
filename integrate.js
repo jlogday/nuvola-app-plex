@@ -136,8 +136,10 @@ WebApp.update = function()
 {
     var track = {};
 
-    // album only appears to be stored as an attribute in a different element
-    track.album = null;
+    var elmt = document.querySelector('div.mini-controls-left div.media-poster');
+    if (elmt) {
+        track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
+    }
     track.artist = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
     track.title = fetchTrackInfo('item-title') || 'Unknown Title';
 
