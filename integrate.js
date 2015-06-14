@@ -127,7 +127,8 @@ WebApp.update = function()
 
     player.setPlaybackState(state);
     player.setCanPause(state === PlaybackState.PLAYING);
-    player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
+    //player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
+    player.setCanPlay(true);
     player.setCanGoPrev(prevSong);
     player.setCanGoNext(nextSong);
 
