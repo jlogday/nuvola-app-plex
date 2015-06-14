@@ -37,6 +37,7 @@ var _ = Nuvola.Translate.gettext;
 var PlaybackState = Nuvola.PlaybackState;
 var PlayerAction = Nuvola.PlayerAction;
 
+// Preferences constants
 var ADDRESS = "app.address";
 
 // Create new WebApp prototype
@@ -112,16 +113,6 @@ function fetchTrackInfo(className) {
     return rval;
 }
 
-function fetchButton(className) {
-    var rval = null;
-    var nl = document.getElementsByClassName(className);
-    if (nl.length > 0) {
-        rval = nl[0];
-    }
-
-    return rval;
-}
-
 function isHidden(elmt) {
     return elmt.className.indexOf('hidden') !== -1;
 }
@@ -190,7 +181,6 @@ WebApp._onActionActivated = function(emitter, name, param) {
                 pp = playButton;
             }
             else {
-                var pauseButton = fetchButton('pause-btn');
                 var pauseButton = document.querySelector('div.mini-controls-center-buttons button.pause-btn');
                 if (pauseButton && !isHidden(pauseButton)) {
                     pp = pauseButton;
