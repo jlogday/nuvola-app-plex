@@ -30,12 +30,53 @@
 // Create media player component
 var player = Nuvola.$object(Nuvola.MediaPlayer);
 
+// Translations
+var _ = Nuvola.Translate.gettext;
+
 // Handy aliases
 var PlaybackState = Nuvola.PlaybackState;
 var PlayerAction = Nuvola.PlayerAction;
 
+var ADDRESS = "app.address";
+
 // Create new WebApp prototype
 var WebApp = Nuvola.$WebApp();
+
+WebApp._onInitAppRunner = function(emitter)
+{
+    Nuvola.WebApp._onInitAppRunner.call(this, emitter);
+
+    Nuvola.config.setDefault(ADDRESS, "");
+
+    Nuvola.core.connect("InitializationForm", this);
+    Nuvola.core.connect("PreferencesForm", this);
+}
+
+WebApp._onInitializationForm = function(emitter, values, entries)
+{
+    if (!Nuvola.config.hasKey(ADDRESS)) {
+        this.appendPreferences(values, entries);
+    }
+}
+
+WebApp._onPreferencesForm = function(emitter, values, entries)
+{
+    this.appendPreferences(values, entries);
+}
+
+WebApp.appendPreferences = function(values, entries)
+{
+    values[ADDRESS] = Nuvola.config.get(ADDRESS);
+
+    entries.push(["header", _("Plex Media Server")]);
+    entries.push(["label", _("Address of your Plex Media Server")]);
+    entries.push(["string", ADDRESS, "Address"]);
+}
+
+WebApp._onHomePageRequest = function(emitter, result)
+{
+    result.url = Nuvola.config.get(ADDRESS);
+}
 
 // Initialization routines
 WebApp._onInitWebWorker = function(emitter)
