@@ -71,79 +71,65 @@ function fetchTrackInfo(className) {
     return rval;
 }
 
+function fetchButton(className) {
+    var rval = null;
+    var nl = document.getElementsByClassName(className);
+    if (nl.length > 0) {
+        rval = nl[0];
+    }
+
+    return rval;
+}
+
+function isHidden(elmt) {
+    return elmt.className.indexOf('hidden') !== -1;
+}
+
+function isDisabled(elmt) {
+    return elmt.className.indexOf('disabled') !== -1;
+}
+
 
 // Extract data from the web page
 WebApp.update = function()
 {
-    var track = {
-        title: null,
-        artist: null,
-        album: null,
-        artLocation: null // always null
-    }
+    var track = {};
 
     // album only appears to be stored as an attribute in a different element
-    track['artist'] = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
-    track['title'] = fetchTrackInfo('item-title') || 'Unknown Title';
+    track.album = null;
+    track.artist = fetchTrackInfo('grandparent-title') || 'Unknown Artist';
+    track.title = fetchTrackInfo('item-title') || 'Unknown Title';
 
     player.setTrack(track);
 
+    var state = PlaybackState.UNKNOWN;
+    var prevSong = false;
+    var nextSong = false;
     try {
-        switch (document.getElementById("status").innerText) {
-            case "Playing":
-                var state = PlaybackState.PLAYING;
-                break;
-            case "Paused":
-                var state = PlaybackState.PAUSED;
-                break;
-            default:
-                var state = PlaybackState.UNKNOWN;
-                break;
+        var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
+        if (playButton) {
+            if (isHidden(playButton)) {
+                state = PlaybackState.PLAYING;
+            }
+            else {
+                state = PlaybackState.PAUSED;
+            }
+
+            var prevButton = document.querySelector('div.mini-controls-center-buttons button.previous-btn');
+            prevSong = prevButton && !isDisabled(prevButton);
+            var nextButton = document.querySelector('div.mini-controls-center-buttons button.next-btn');
+            nextSong = nextButton && !isDisabled(nextButton);
         }
     }
     catch (e) {
-        var state = PlaybackState.UNKNOWN;
+        state = PlaybackState.UNKNOWN;
     }
 
     player.setPlaybackState(state);
-    
-    var enabled;
-    try {
-        enabled = !document.getElementById("prev").disabled;
-        var nl = document.getElementsByClassName("previous-btn");
-        if (nl.length > 0) {
-            enabled = !nl[0].disabled;
-        }
-    }
-    catch(e) {
-        enabled = false;
-    }
-    player.setCanGoPrev(enabled);
-
-    try {
-        enabled  = !document.getElementById("next").disabled;
-    }
-    catch(e) {
-        enabled = false;
-    }
-    player.setCanGoNext(enabled);
-
-    var playPause = document.getElementById("pp");
-    try {
-        enabled  = playPause.innerText == "Play";
-    }
-    catch(e) {
-        enabled = false;
-    }
-    player.setCanPlay(true);
-
-    try {
-        enabled  = playPause.innerText == "Pause";
-    }
-    catch(e) {
-        enabled = false;
-    }
-    player.setCanPause(true);
+    player.setCanPause(state === PlaybackState.PLAYING);
+    player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
+    player.setCanGoPrev(prevSong);
+    player.setCanGoNext(nextSong);
 
     // Schedule the next update
     setTimeout(this.update.bind(this), 500);
@@ -153,34 +139,59 @@ WebApp.update = function()
 WebApp._onActionActivated = function(emitter, name, param) {
     switch (name) {
         case PlayerAction.TOGGLE_PLAY:
-            var nl = document.getElementsByClassName("pause-btn");
-            if (nl.length > 0) {
-                Nuvola.clickOnElement(nl[0]);
+            var pp;
+            var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
+
+            if (playButton && !isHidden(playButton)) {
+                pp = playButton;
             }
+            else {
+                var pauseButton = fetchButton('pause-btn');
+                var pauseButton = document.querySelector('div.mini-controls-center-buttons button.pause-btn');
+                if (pauseButton && !isHidden(pauseButton)) {
+                    pp = pauseButton;
+                }
+            }
+
+            if (pp) {
+                Nuvola.clickOnElement(pp);
+            }
+
             break;
         case PlayerAction.PLAY:
-            var nl = document.getElementsByClassName("play-btn");
-            if (nl.length > 0) {
-                Nuvola.clickOnElement(nl[0]);
+            var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
+            if (playButton) {
+                Nuvola.clickOnElement(playButton);
             }
+
             break;
         case PlayerAction.PAUSE:
-            var nl = document.getElementsByClassName("pause-btn");
-            if (nl.length > 0) {
-                Nuvola.clickOnElement(nl[0]);
+            var pauseButton = document.querySelector('div.mini-controls-center-buttons button.pause-btn');
+            if (pauseButton) {
+                Nuvola.clickOnElement(pauseButton);
             }
+
             break;
         case PlayerAction.STOP:
-            var nl = document.getElementsByClassName("stop-btn");
-            if (nl.length > 0) {
-                Nuvola.clickOnElement(nl[0]);
+            var stopButton = document.querySelector('div.mini-controls-center-buttons button.stop-btn');
+            if (stopButton) {
+                Nuvola.clickOnElement(stopButton);
             }
+
             break;
         case PlayerAction.PREV_SONG:
-            Nuvola.clickOnElement(document.getElementById("prev"));
+            var prevButton = document.querySelector('div.mini-controls-center-buttons button.previous-btn');
+            if (prevButton) {
+                Nuvola.clickOnElement(prevButton);
+            }
+
             break;
         case PlayerAction.PREV_SONG:
-            Nuvola.clickOnElement(document.getElementById("next"));
+            var nextButton = document.querySelector('div.mini-controls-center-buttons button.next-btn');
+            if (nextButton) {
+                Nuvola.clickOnElement(nextButton);
+            }
+
             break;
     }
 }
