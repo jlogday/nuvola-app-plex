@@ -103,16 +103,6 @@ WebApp._onPageReady = function()
     this.update();
 }
 
-function fetchTrackInfo(className) {
-    var rval = null;
-    var nl = document.getElementsByClassName(className);
-    if (nl.length > 0) {
-        rval = nl[0].innerText;
-    }
-
-    return rval;
-}
-
 function isHidden(elmt) {
     return elmt.className.indexOf('hidden') !== -1;
 }
@@ -131,15 +121,32 @@ WebApp.update = function()
     if (elmt) {
         track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
     }
+    else {
+        track.album = null;
+    }
 
     elmt = document.querySelector('button.grandparent-title');
     if (elmt) {
         track.artist = elmt.innerText || 'Unknown Artist';
     }
+    else {
+        track.artist = null;
+    }
 
     elmt = document.querySelector('button.item-title');
     if (elmt) {
         track.title = elmt.innerText || 'Unknown Title';
+    }
+    else {
+        track.title = null;
+    }
+
+    elmt = document.querySelector('div.mini-controls-left div.media-poster');
+    if (elmt) {
+        track.artLocation = elmt.style.backgroundImage;
+    }
+    else {
+        track.artLocation = null;
     }
 
     player.setTrack(track);
