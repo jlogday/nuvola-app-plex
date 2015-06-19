@@ -125,36 +125,7 @@ WebApp.update = function()
         var nextButton = this.getNextButton();
         nextSong = nextButton && nextButton.isEnabled();
 
-        var track = {};
-        track.artLocation = null;
-
-        var elmt = document.querySelector('div.mini-controls-left div.media-poster');
-        if (elmt) {
-            track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
-            //track.artLocation = elmt.style.backgroundImage;
-        }
-        else {
-            track.album = null;
-            track.artLocation = null;
-        }
-
-        elmt = document.querySelector('button.grandparent-title');
-        if (elmt) {
-            track.artist = elmt.innerText || 'Unknown Artist';
-        }
-        else {
-            track.artist = null;
-        }
-
-        elmt = document.querySelector('button.item-title');
-        if (elmt) {
-            track.title = elmt.innerText || 'Unknown Title';
-        }
-        else {
-            track.title = null;
-        }
-
-        player.setTrack(track);
+        this.setTrackInfo();
     }
 
     player.setPlaybackState(state);
@@ -165,6 +136,39 @@ WebApp.update = function()
 
     // Schedule the next update
     setTimeout(this.update.bind(this), 500);
+}
+
+WebApp.setTrackInfo = function()
+{
+    var track = {};
+
+    var elmt = document.querySelector('div.mini-controls-left div.media-poster');
+    if (elmt) {
+        track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
+        track.artLocation = elmt.getAttribute('data-image-url') || null;
+    }
+    else {
+        track.album = null;
+        track.artLocation = null;
+    }
+
+    elmt = document.querySelector('button.grandparent-title');
+    if (elmt) {
+        track.artist = elmt.innerText || 'Unknown Artist';
+    }
+    else {
+        track.artist = null;
+    }
+
+    elmt = document.querySelector('button.item-title');
+    if (elmt) {
+        track.title = elmt.innerText || 'Unknown Title';
+    }
+    else {
+        track.title = null;
+    }
+
+    player.setTrack(track);
 }
 
 WebApp.getButton = function(name)
