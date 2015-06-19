@@ -103,81 +103,61 @@ WebApp._onPageReady = function()
     this.update();
 }
 
-function isHidden(elmt) {
-    return elmt.className.indexOf('hidden') !== -1;
-}
-
-function isDisabled(elmt) {
-    return elmt.className.indexOf('disabled') !== -1;
-}
-
-
 // Extract data from the web page
 WebApp.update = function()
 {
-    var track = {};
-
-    var elmt = document.querySelector('div.mini-controls-left div.media-poster');
-    if (elmt) {
-        track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
-    }
-    else {
-        track.album = null;
-    }
-
-    elmt = document.querySelector('button.grandparent-title');
-    if (elmt) {
-        track.artist = elmt.innerText || 'Unknown Artist';
-    }
-    else {
-        track.artist = null;
-    }
-
-    elmt = document.querySelector('button.item-title');
-    if (elmt) {
-        track.title = elmt.innerText || 'Unknown Title';
-    }
-    else {
-        track.title = null;
-    }
-
-    elmt = document.querySelector('div.mini-controls-left div.media-poster');
-    if (elmt) {
-        track.artLocation = elmt.style.backgroundImage;
-    }
-    else {
-        track.artLocation = null;
-    }
-
-    player.setTrack(track);
-
     var state = PlaybackState.UNKNOWN;
     var prevSong = false;
     var nextSong = false;
-    try {
-        var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
-        if (playButton) {
-            if (isHidden(playButton)) {
-                state = PlaybackState.PLAYING;
-            }
-            else {
-                state = PlaybackState.PAUSED;
-            }
 
-            var prevButton = document.querySelector('div.mini-controls-center-buttons button.previous-btn');
-            prevSong = prevButton && !isDisabled(prevButton);
-            var nextButton = document.querySelector('div.mini-controls-center-buttons button.next-btn');
-            nextSong = nextButton && !isDisabled(nextButton);
+    var playButton = this.getPlayButton();
+    if (playButton) {
+        if (playButton.isHidden()) {
+            state = PlaybackState.PLAYING;
         }
-    }
-    catch (e) {
-        state = PlaybackState.UNKNOWN;
+        else {
+            state = PlaybackState.PAUSED;
+        }
+
+        var prevButton = this.getPreviousButton();
+        prevSong = prevButton && prevButton.isEnabled();
+
+        var nextButton = this.getNextButton();
+        nextSong = nextButton && nextButton.isEnabled();
+
+        var track = {};
+
+        var elmt = document.querySelector('div.mini-controls-left div.media-poster');
+        if (elmt) {
+            track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
+            track.artLocation = elmt.style.backgroundImage;
+        }
+        else {
+            track.album = null;
+            track.artLocation = null;
+        }
+
+        elmt = document.querySelector('button.grandparent-title');
+        if (elmt) {
+            track.artist = elmt.innerText || 'Unknown Artist';
+        }
+        else {
+            track.artist = null;
+        }
+
+        elmt = document.querySelector('button.item-title');
+        if (elmt) {
+            track.title = elmt.innerText || 'Unknown Title';
+        }
+        else {
+            track.title = null;
+        }
+
+        player.setTrack(track);
     }
 
     player.setPlaybackState(state);
-    player.setCanPause(state === PlaybackState.PLAYING);
-    //player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
-    player.setCanPlay(true);
+    player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
     player.setCanGoPrev(prevSong);
     player.setCanGoNext(nextSong);
 
@@ -185,63 +165,103 @@ WebApp.update = function()
     setTimeout(this.update.bind(this), 500);
 }
 
+WebApp.getButton = function(name)
+{
+    var button = document.querySelector('div.mini-controls-center-buttons button.' + name + '-btn');
+    button.isHidden = function()
+    {
+        return this.className.indexOf('hidden') !== -1;
+    }
+
+    button.isEnabled = function()
+    {
+        return this.className.indexOf('disabled') === -1;
+    }
+
+    return button;
+}
+
+WebApp.getPlayButton = function()
+{
+    return this.getButton('play');
+}
+
+WebApp.getPauseButton = function()
+{
+    return this.getButton('pause');
+}
+
+WebApp.getStopButton = function()
+{
+    return this.getButton('stop');
+}
+
+WebApp.getPreviousButton = function()
+{
+    return this.getButton('previous');
+}
+
+WebApp.getNextButton = function()
+{
+    return this.getButton('next');
+}
+
+
 // Handler of playback actions
 WebApp._onActionActivated = function(emitter, name, param) {
     switch (name) {
         case PlayerAction.TOGGLE_PLAY:
-            var pp;
-            var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
+            var playButton = this.getPlayButton();
 
-            if (playButton && !isHidden(playButton)) {
-                pp = playButton;
+            if (playButton && !playButton.isHidden()) {
+                Nuvola.clickOnElement(playButton);
             }
             else {
-                var pauseButton = document.querySelector('div.mini-controls-center-buttons button.pause-btn');
-                if (pauseButton && !isHidden(pauseButton)) {
-                    pp = pauseButton;
+                var pauseButton = this.getPauseButton();
+                if (pauseButton && !pauseButton.isHidden()) {
+                    Nuvola.clickOnElement(pauseButton);
                 }
-            }
-
-            if (pp) {
-                Nuvola.clickOnElement(pp);
             }
 
             break;
         case PlayerAction.PLAY:
-            /*var playButton = document.querySelector('div.mini-controls-center-buttons button.play-btn');
-            if (playButton) {
+            var playButton = this.getPlayButton();
+
+            if (playButton && !playButton.isHidden()) {
                 Nuvola.clickOnElement(playButton);
-            }*/
-            try {
-                document.querySelector('div.section-side-bar-container').getElementsByClassName('play-btn')[0].click()
             }
-            catch (e) {}
+            else {
+                try {
+                    document.querySelector('div.section-side-bar-container').getElementsByClassName('play-btn')[0].click()
+                }
+                catch (e) {}
+            }
 
             break;
         case PlayerAction.PAUSE:
-            var pauseButton = document.querySelector('div.mini-controls-center-buttons button.pause-btn');
-            if (pauseButton) {
+            var pauseButton = this.getPauseButton();
+            if (pauseButton && !pauseButton.isHidden()) {
                 Nuvola.clickOnElement(pauseButton);
             }
 
             break;
         case PlayerAction.STOP:
-            var stopButton = document.querySelector('div.mini-controls-center-buttons button.stop-btn');
-            if (stopButton) {
+            var stopButton = this.getStopButton();
+            if (stopButton && !stopButton.isHidden()) {
                 Nuvola.clickOnElement(stopButton);
             }
 
             break;
         case PlayerAction.PREV_SONG:
-            var prevButton = document.querySelector('div.mini-controls-center-buttons button.previous-btn');
-            if (prevButton) {
-                Nuvola.clickOnElement(prevButton);
+            var previousButton = this.getPreviousButton();
+            if (previousButton && !previousButton.isHidden()) {
+                Nuvola.clickOnElement(previousButton);
             }
 
             break;
         case PlayerAction.NEXT_SONG:
-            var nextButton = document.querySelector('div.mini-controls-center-buttons button.next-btn');
-            if (nextButton) {
+            var nextButton = this.getNextButton();
+            if (nextButton && !nextButton.isHidden()) {
                 Nuvola.clickOnElement(nextButton);
             }
 
