@@ -126,11 +126,12 @@ WebApp.update = function()
         nextSong = nextButton && nextButton.isEnabled();
 
         var track = {};
+        track.artLocation = null;
 
         var elmt = document.querySelector('div.mini-controls-left div.media-poster');
         if (elmt) {
             track.album = elmt.getAttribute('data-parent-title') || 'Unknown Album';
-            track.artLocation = elmt.style.backgroundImage;
+            //track.artLocation = elmt.style.backgroundImage;
         }
         else {
             track.album = null;
@@ -158,6 +159,7 @@ WebApp.update = function()
 
     player.setPlaybackState(state);
     player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
+    player.setCanPause(state === PlaybackState.PLAYING);
     player.setCanGoPrev(prevSong);
     player.setCanGoNext(nextSong);
 
