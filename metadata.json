@@ -1,5 +1,5 @@
 {
-	"id": "plex",
+	"id": "plex_media_server",
 	"name": "Plex Media Server",
 	"maintainer_name": "Jason Day",
 	"maintainer_link": "https://github.com/jlogday",
