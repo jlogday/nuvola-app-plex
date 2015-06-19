@@ -168,14 +168,16 @@ WebApp.update = function()
 WebApp.getButton = function(name)
 {
     var button = document.querySelector('div.mini-controls-center-buttons button.' + name + '-btn');
-    button.isHidden = function()
-    {
-        return this.className.indexOf('hidden') !== -1;
-    }
+    if (button) {
+        button.isHidden = function()
+        {
+            return this.className.indexOf('hidden') !== -1;
+        }
 
-    button.isEnabled = function()
-    {
-        return this.className.indexOf('disabled') === -1;
+        button.isEnabled = function()
+        {
+            return this.className.indexOf('disabled') === -1;
+        }
     }
 
     return button;
