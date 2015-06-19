@@ -38,6 +38,7 @@ var PlaybackState = Nuvola.PlaybackState;
 var PlayerAction = Nuvola.PlayerAction;
 
 // Preferences constants
+var DEFAULT_ADDRESS = "http://localhost:32400/web";
 var ADDRESS = "app.address";
 
 // Create new WebApp prototype
@@ -47,7 +48,7 @@ WebApp._onInitAppRunner = function(emitter)
 {
     Nuvola.WebApp._onInitAppRunner.call(this, emitter);
 
-    Nuvola.config.setDefault(ADDRESS, "");
+    Nuvola.config.setDefault(ADDRESS, DEFAULT_ADDRESS);
 
     Nuvola.core.connect("InitializationForm", this);
     Nuvola.core.connect("PreferencesForm", this);
