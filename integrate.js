@@ -110,6 +110,7 @@ WebApp.update = function()
     var state = PlaybackState.UNKNOWN;
     var prevSong = false;
     var nextSong = false;
+    var canPlay = false;
 
     var playButton = this.getPlayButton();
     if (playButton) {
@@ -118,6 +119,7 @@ WebApp.update = function()
         }
         else {
             state = PlaybackState.PAUSED;
+            canPlay = true;
         }
 
         var prevButton = this.getPreviousButton();
@@ -128,9 +130,12 @@ WebApp.update = function()
 
         this.setTrackInfo();
     }
+    else {
+        canPlay = this.getPlayAllButton() !== null;
+    }
 
     player.setPlaybackState(state);
-    player.setCanPlay(state === PlaybackState.PAUSED || state === PlaybackState.UNKNOWN);
+    player.setCanPlay(canPlay);
     player.setCanPause(state === PlaybackState.PLAYING);
     player.setCanGoPrev(prevSong);
     player.setCanGoNext(nextSong);
@@ -215,6 +220,19 @@ WebApp.getNextButton = function()
     return this.getButton('next');
 }
 
+WebApp.getPlayAllButton = function()
+{
+    var button = null;
+    var elmt = document.querySelector('div.section-side-bar-container');
+    if (elmt) {
+        var nl = elmt.getElementsByClassName('play-btn');
+        if (nl) {
+            button = nl[0];
+        }
+    }
+
+    return button;
+}
 
 // Handler of playback actions
 WebApp._onActionActivated = function(emitter, name, param) {
@@ -236,14 +254,14 @@ WebApp._onActionActivated = function(emitter, name, param) {
         case PlayerAction.PLAY:
             var playButton = this.getPlayButton();
 
-            if (playButton && !playButton.isHidden()) {
+            if (playButton) {
                 Nuvola.clickOnElement(playButton);
             }
             else {
-                try {
-                    document.querySelector('div.section-side-bar-container').getElementsByClassName('play-btn')[0].click()
+                var playAllButton = this.getPlayAllButton();
+                if (playAllButton) {
+                    playAllButton.click();
                 }
-                catch (e) {}
             }
 
             break;
